@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace ShoppingCart.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ShoppingCartController : ControllerBase

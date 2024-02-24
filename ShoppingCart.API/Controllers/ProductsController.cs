@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShoppingCart.Data;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace ShoppingCart.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
@@ -21,16 +23,32 @@ namespace ShoppingCart.API.Controllers
 
         // GET: api/Products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-            return await _context.Products.ToListAsync();
+            var products = await _context.Products.ToListAsync();
+
+            if (products == null || products.Count == 0)
+            {
+                return NotFound("No products found.");
+            }
+
+            return Ok(products);
         }
 
         // GET: api/Products/category/{categoryId}
         [HttpGet("category/{categoryId}")]
         public async Task<ActionResult<IEnumerable<Product>>> GetProductsByCategory(int categoryId)
         {
-            return await _context.Products.Where(p => p.CategoryId == categoryId).ToListAsync();
+            var products = await _context.Products
+                .Where(p => p.CategoryId == categoryId)
+                .ToListAsync();
+
+            if (products == null || products.Count == 0)
+            {
+                return NotFound("No products found in the specified category.");
+            }
+
+            return Ok(products);
         }
 
         // GET: api/Products/{id}
@@ -41,16 +59,21 @@ namespace ShoppingCart.API.Controllers
 
             if (product == null)
             {
-                return NotFound();
+                return NotFound("Product not found.");
             }
 
-            return product;
+            return Ok(product);
         }
 
         // POST: api/Products
         [HttpPost]
         public async Task<ActionResult<Product>> AddProduct(Product product)
         {
+            if (product == null)
+            {
+                return BadRequest("Invalid product data.");
+            }
+
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
@@ -63,7 +86,7 @@ namespace ShoppingCart.API.Controllers
         {
             if (id != product.Id)
             {
-                return BadRequest();
+                return BadRequest("Invalid product ID.");
             }
 
             _context.Entry(product).State = EntityState.Modified;
@@ -76,7 +99,7 @@ namespace ShoppingCart.API.Controllers
             {
                 if (!ProductExists(id))
                 {
-                    return NotFound();
+                    return NotFound("Product not found.");
                 }
                 else
                 {
@@ -94,7 +117,7 @@ namespace ShoppingCart.API.Controllers
             var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
-                return NotFound();
+                return NotFound("Product not found.");
             }
 
             _context.Products.Remove(product);
