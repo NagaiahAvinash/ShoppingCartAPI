@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using ShoppingCart.Data; 
 
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -14,11 +15,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("ShoppingCartDb"));
+
+
 builder.Services.AddDbContext<AppSecurityDbContext>(options =>
     options.UseInMemoryDatabase("ShoppingCartSecurityDb"));
 
-builder.Services.AddDefaultIdentity<IdentityUser>()
-    .AddEntityFrameworkStores<AppSecurityDbContext>();
+builder.Services.AddAuthorization();
+
+builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+.AddEntityFrameworkStores<AppSecurityDbContext>();
+
+// builder.Services.AddDefaultIdentity<IdentityUser>()
+//     .AddEntityFrameworkStores<AppSecurityDbContext>();
     
     //
     
@@ -29,6 +37,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.MapIdentityApi<IdentityUser>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
