@@ -4,6 +4,8 @@ using ShoppingCart.Data;
 using Microsoft.AspNetCore.Authorization;
 using ShoppingCart.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace ShoppingCart.API.Controllers
 {
@@ -64,6 +66,93 @@ namespace ShoppingCart.API.Controllers
             }
 
             shoppingCart.Products.Add(product);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // POST: api/ShoppingCart/remove/{productId}
+        [HttpPost("remove/{productId}")]
+        public async Task<IActionResult> RemoveProductFromCart(int productId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized(); // User not found, return an unauthorized response
+            }
+
+            var shoppingCart = await _context.ShoppingCarts
+                                    .Include(sc => sc.Products)
+                                    .FirstOrDefaultAsync(sc => sc.UserId == user.Id);
+
+            if (shoppingCart == null)
+            {
+                return NotFound("Shopping cart not found");
+            }
+
+            var productToRemove = shoppingCart.Products.FirstOrDefault(p => p.Id == productId);
+            if (productToRemove == null)
+            {
+                return NotFound("Product not found in the shopping cart");
+            }
+
+            shoppingCart.Products.Remove(productToRemove);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // POST: api/ShoppingCart/clear
+        [HttpPost("clear")]
+        public async Task<IActionResult> ClearShoppingCart()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized(); // User not found, return an unauthorized response
+            }
+
+            var shoppingCart = await _context.ShoppingCarts
+                                    .Include(sc => sc.Products)
+                                    .FirstOrDefaultAsync(sc => sc.UserId == user.Id);
+
+            if (shoppingCart == null)
+            {
+                return NotFound("Shopping cart not found");
+            }
+
+            shoppingCart.Products.Clear();
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // POST: api/ShoppingCart/update/{productId}/{quantity}
+        [HttpPost("update/{productId}/{quantity}")]
+        public async Task<IActionResult> UpdateProductQuantity(int productId, int quantity)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized(); // User not found, return an unauthorized response
+            }
+
+            var shoppingCart = await _context.ShoppingCarts
+                                    .Include(sc => sc.Products)
+                                    .FirstOrDefaultAsync(sc => sc.UserId == user.Id);
+
+            if (shoppingCart == null)
+            {
+                return NotFound("Shopping cart not found");
+            }
+
+            var productToUpdate = shoppingCart.Products.FirstOrDefault(p => p.Id == productId);
+            if (productToUpdate == null)
+            {
+                return NotFound("Product not found in the shopping cart");
+            }
+
+            productToUpdate.Quantity = quantity;
             await _context.SaveChangesAsync();
 
             return NoContent();
