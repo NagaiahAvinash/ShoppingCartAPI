@@ -25,10 +25,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
 .AddEntityFrameworkStores<AppSecurityDbContext>();
 
-// builder.Services.AddDefaultIdentity<IdentityUser>()
-//     .AddEntityFrameworkStores<AppSecurityDbContext>();
-    
-    //
+
     
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
@@ -48,7 +45,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthentication(); 
-app.UseAuthorization();
+
 
 app.MapControllers();
 
