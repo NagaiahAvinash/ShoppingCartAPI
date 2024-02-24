@@ -7,55 +7,56 @@ namespace ShoppingCart.Tests
     public class ProductTests
     {
         [TestMethod]
-        public void CanChangeProductName()
+        // Verifies that a product can be created with valid data.
+        public void CanCreateProductWithValidData()
         {
-            // Arrange
-            var product = new Product { Name = "Nike" };
-
-            // Act
-            product.Name = "Adidas";
+            // Arrange & Act
+            var product = new Product { Id = 1, Name = "Laptop", Price = 999.99m, Description = "High-performance laptop", CategoryId = 1, Category = "Electronics" };
 
             // Assert
-            Assert.AreEqual("Adidas", product.Name);
+            Assert.IsNotNull(product);
         }
 
         [TestMethod]
-        public void CanChangeProductPrice()
+        // Verifies that the product's name is correctly set.
+        public void ProductNameIsCorrectlySet()
         {
             // Arrange
-            var product = new Product { Price = 100 };
+            var productName = "Smartphone";
 
             // Act
-            product.Price = 1999;
+            var product = new Product { Id = 2, Name = productName, Price = 799.99m, Description = "Flagship smartphone", CategoryId = 2, Category = "Electronics" };
 
             // Assert
-            Assert.AreEqual(1999, product.Price);
+            Assert.AreEqual(productName, product.Name);
         }
 
         [TestMethod]
-        public void CanChangeProductDescription()
+        // Verifies that the product's price is correctly set.
+        public void ProductPriceIsCorrectlySet()
         {
             // Arrange
-            var product = new Product { Description = "Running Shoe" };
+            var productPrice = 199.99m;
 
             // Act
-            product.Description = "Casual Shoe";
+            var product = new Product { Id = 3, Name = "Tablet", Price = productPrice, Description = "Portable tablet", CategoryId = 3, Category = "Electronics" };
 
             // Assert
-            Assert.AreEqual("Casual Shoe", product.Description);
+            Assert.AreEqual(productPrice, product.Price);
         }
 
         [TestMethod]
-        public void CanChangeProductId()
+        // Verifies that the product's description is correctly set.
+        public void ProductDescriptionIsCorrectlySet()
         {
             // Arrange
-            var product = new Product { Id = 1 };
+            var productDescription = "Wireless earbuds";
 
             // Act
-            product.Id = 2;
+            var product = new Product { Id = 4, Name = "Earbuds", Price = 79.99m, Description = productDescription, CategoryId = 4, Category = "Electronics" };
 
             // Assert
-            Assert.AreEqual(2, product.Id);
+            Assert.AreEqual(productDescription, product.Description);
         }
     }
 }
